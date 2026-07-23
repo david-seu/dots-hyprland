@@ -122,61 +122,13 @@ Rectangle {
 
         anchors.fill: parent
         // implicitHeight: tabStack.implicitHeight
-        spacing: 20
-
-        // Navigation rail
-        Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: false
-            Layout.leftMargin: 10
-            Layout.topMargin: 10
-            implicitWidth: tabBar.implicitWidth
-            // Navigation rail buttons
-            NavigationRailTabArray {
-                id: tabBar
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                currentIndex: root.selectedTab
-                expanded: false
-                Repeater {
-                    model: root.tabs
-                    NavigationRailButton {
-                        required property int index
-                        required property var modelData
-                        showToggledHighlight: false
-                        toggled: root.selectedTab == index
-                        buttonText: modelData.name
-                        buttonIcon: modelData.icon
-                        onPressed: {
-                            root.selectedTab = index;
-                            Persistent.states.sidebar.bottomGroup.tab = index;
-                        }
-                    }
-                }
-            }
-            // Collapse button
-            CalendarHeaderButton {
-                anchors.left: parent.left
-                anchors.top: parent.top
-                forceCircle: true
-                downAction: () => {
-                    root.setCollapsed(true);
-                }
-                contentItem: MaterialSymbol {
-                    text: "keyboard_arrow_down"
-                    iconSize: Appearance.font.pixelSize.larger
-                    horizontalAlignment: Text.AlignHCenter
-                    color: Appearance.colors.colOnLayer1
-                }
-            }
-        }
+        spacing: 0
 
         // Content area
         Item {
+            id: contentArea
             Layout.fillWidth: true
             Layout.fillHeight: true
-            // implicitHeight: tabStack.implicitHeight
 
             Loader {
                 id: tabStack
@@ -190,9 +142,9 @@ Rectangle {
                 Connections {
                     target: root
                     function onSelectedTabChanged() {
-                        if (root.currentTab > root.previousIndex)
+                        if (root.selectedTab > root.previousIndex)
                             tabSwitchBehavior.animation.down = true;
-                        else if (root.currentTab < root.previousIndex)
+                        else if (root.selectedTab < root.previousIndex)
                             tabSwitchBehavior.animation.down = false;
                         tabStack.source = root.tabs[root.selectedTab].widget;
                     }
@@ -204,6 +156,23 @@ Rectangle {
                         id: upAnim
                         down: true
                     }
+                }
+            }
+
+            CalendarHeaderButton {
+                anchors.left: parent.left
+                anchors.top: parent.top
+                anchors.margins: 10
+                z: 1
+                forceCircle: true
+                downAction: () => {
+                    root.setCollapsed(true);
+                }
+                contentItem: MaterialSymbol {
+                    text: "keyboard_arrow_down"
+                    iconSize: Appearance.font.pixelSize.larger
+                    horizontalAlignment: Text.AlignHCenter
+                    color: Appearance.colors.colOnLayer1
                 }
             }
         }

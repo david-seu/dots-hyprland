@@ -17,10 +17,12 @@ import qs.modules.ii.sessionScreen
 import qs.modules.ii.sidebarRight
 import qs.modules.ii.overlay
 import qs.modules.ii.wallpaperSelector
+import "file:///home/zyk3l/git/co2-work-companion/widget/quickshell"
 
 Scope {
     PanelLoader { extraCondition: !Config.options.bar.vertical; component: Bar {} }
     PanelLoader { component: Background {} }
+    PanelLoader { component: PixelSprout {} }
     PanelLoader { component: Cheatsheet {} }
     PanelLoader { component: Lock {} }
     PanelLoader { component: MediaControls {} }

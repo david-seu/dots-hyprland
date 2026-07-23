@@ -18,10 +18,6 @@ Scope { // Scope
             "icon": "keyboard",
             "name": Translation.tr("Keybinds")
         },
-        {
-            "icon": "experiment",
-            "name": Translation.tr("Elements")
-        },
     ]
 
     Loader {
@@ -152,7 +148,7 @@ Scope { // Scope
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         spacing: 10
-                        currentIndex: Persistent.states.cheatsheet.tabIndex
+                        currentIndex: Math.max(0, Math.min(Persistent.states.cheatsheet.tabIndex, root.tabButtonList.length - 1))
                         onCurrentIndexChanged: {
                             Persistent.states.cheatsheet.tabIndex = currentIndex;
                         }
@@ -171,7 +167,6 @@ Scope { // Scope
                         }
 
                         CheatsheetKeybinds {}
-                        CheatsheetPeriodicTable {}
                     }
                 }
             }

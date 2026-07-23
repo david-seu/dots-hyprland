@@ -1,6 +1,8 @@
 # Personal Hyprland setup plan
 
-Status: committed, pushed, and active on `personal/lean-hyprland`.
+Status: committed, pushed, and active on `personal/lean-hyprland`; calendar,
+cheatsheet, and Pixel Sprout follow-up fixes are included in the current
+working change.
 
 Live backup: `/home/zyk3l/ii-lean-hyprland-backup-20260723`
 
@@ -117,6 +119,9 @@ The target is a small personal desktop layer, not a general-purpose desktop envi
 - Utility buttons: keep Pixel Sprout, screenshots, screen recording, color picker, and power-profile switching; remove the dark/light theme button and on-screen keyboard button.
 - Screen recording should default to region recording with system/output audio enabled; microphone capture remains a separate decision.
 - Microphone capture should require a separate explicit recording keybind rather than being enabled by default.
+- Calendar is a single full-width sidebar view; do not restore the unused
+  navigation rail while it remains the only calendar tab.
+- Cheatsheet keeps only Keybinds; the periodic-table/Elements page is removed.
 
 ## Waybar versus Quickshell research
 
@@ -148,6 +153,12 @@ Sources:
 - The tracked personal config enables visible color picker and screen recording, disables dark/light and on-screen keyboard buttons, keeps Pixel Sprout and resource counters, adds power-profile/sidebar toggles, disables battery sounds, and caps cliphist writes at 500 entries.
 - Notification history is bounded to the newest 200 entries from the last 30 days, deduplicates repetitive NetworkManager/battery alerts, suppresses generic Chrome popups, and keeps the history entry.
 - Direct bindings are staged for Kitty, Dolphin, Chrome, VS Code, btop, Pixel Sprout, and a double-invocation settings toggle.
+- Pixel Sprout is embedded in the main `ii` Quickshell process because its
+  widget imports `qs.modules.common`; `Super+BracketLeft` calls the matching
+  `qs -c ii` IPC target.
+- The live profile still uses Hyprland `.conf` files for stability. The
+  upstream Lua migration is documented in `UPSTREAM-DESIGN-REVIEW.md`; a
+  separate, tested port is preferred over an in-place upstream merge.
 - Hyprland parsing and targeted QML syntax checks pass. Live file hashes match the source profile and `hyprctl reload` returned `ok`; the running Quickshell process remains `qs -c ii`.
 
 ## Open decisions for the grilling session
