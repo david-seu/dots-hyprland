@@ -1,6 +1,8 @@
 # Personal Hyprland setup plan
 
-Status: staged source-profile implementation on `personal/lean-hyprland`. No live configuration changes have been made.
+Status: committed, pushed, and active on `personal/lean-hyprland`.
+
+Live backup: `/home/zyk3l/ii-lean-hyprland-backup-20260723`
 
 Last updated: 2026-07-23
 
@@ -141,11 +143,12 @@ Sources:
 ## Implementation snapshot
 
 - The repository is on a personal fork branch, pinned to the currently installed upstream baseline rather than rebased across 435 newer upstream commits.
+- Commit `36d0ebda` is pushed to `origin/personal/lean-hyprland`; the source profile was deployed with the experimental file installer and the existing `hypr/custom` overrides were then synced explicitly.
 - Startup cleanup is source-only: GeoClue, video-wallpaper restore, EasyEffects, nm-applet, and Zed theme sync are disabled; keyring, hypridle, KDE polkit, clipboard watchers, Quickshell, and CO2 Work Companion remain.
 - The tracked personal config enables visible color picker and screen recording, disables dark/light and on-screen keyboard buttons, keeps Pixel Sprout and resource counters, adds power-profile/sidebar toggles, disables battery sounds, and caps cliphist writes at 500 entries.
 - Notification history is bounded to the newest 200 entries from the last 30 days, deduplicates repetitive NetworkManager/battery alerts, suppresses generic Chrome popups, and keeps the history entry.
 - Direct bindings are staged for Kitty, Dolphin, Chrome, VS Code, btop, Pixel Sprout, and a double-invocation settings toggle.
-- Hyprland parsing and targeted QML syntax checks pass. The running session has not been reloaded or replaced.
+- Hyprland parsing and targeted QML syntax checks pass. Live file hashes match the source profile and `hyprctl reload` returned `ok`; the running Quickshell process remains `qs -c ii`.
 
 ## Open decisions for the grilling session
 
@@ -167,6 +170,6 @@ Sources:
 - Fork `end-4/dots-hyprland` into the user's own GitHub repository.
 - Use the personal fork as `origin` and retain `end-4/dots-hyprland` as `upstream` for deliberate updates.
 - Keep the repository's `dots/` tree as the source of truth; treat live files under `~/.config` as deployed copies.
-- Apply changes through a reversible sync/deployment step so the running setup can be tested before replacing the live copy.
+- Apply changes through a reversible sync/deployment step so the running setup can be tested before replacing the live copy. The current rollback copy is `/home/zyk3l/ii-lean-hyprland-backup-20260723`.
 - Commit the setup plan and personal configuration changes, but never commit secrets, keyring contents, clipboard history, notification state, or generated runtime state.
 - Update from upstream deliberately; do not allow upstream refreshes to silently restore removed shell modules or bindings.
