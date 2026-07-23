@@ -75,6 +75,8 @@ Singleton {
 
     property bool silent: false
     property int unread: 0
+    property int maxHistoryEntries: 200
+    property double maxHistoryAgeMs: 30 * 24 * 60 * 60 * 1000
     property var filePath: Directories.notificationsPath
     property list<Notif> list: []
     property var popupList: list.filter((notif) => notif.popup);
@@ -91,6 +93,40 @@ Singleton {
 
     function stringifyList(list) {
         return JSON.stringify(list.map((notif) => notifToJSON(notif)), null, 2);
+    }
+
+    function isChromeNotification(notif) {
+        const appName = String(notif?.appName ?? "").toLowerCase();
+        return appName.includes("google chrome") || appName === "chrome" || appName === "chromium" || appName.includes("chrome notification");
+    }
+
+    function isRepetitiveSystemNotification(notif) {
+        const appName = String(notif?.appName ?? "").toLowerCase();
+        const text = `${notif?.summary ?? ""} ${notif?.body ?? ""}`.toLowerCase();
+        const networkApp = appName.includes("networkmanager") || appName.includes("network manager") || appName.includes("nm-applet");
+        const batteryText = text.includes("battery") || text.includes("plug in") || text.includes("plugging");
+        const networkText = text.includes("connection established") || text.includes("connected") || text.includes("disconnected");
+        return (networkApp && networkText) || (batteryText && (appName.includes("notify") || appName.includes("shell") || appName === ""));
+    }
+
+    function retainHistory(notifications) {
+        const cutoff = Date.now() - root.maxHistoryAgeMs;
+        const newestFirst = notifications
+            .filter(notif => notif && notif.time >= cutoff)
+            .sort((a, b) => b.time - a.time);
+        const seenRepetitive = new Set();
+        const deduplicated = newestFirst.filter(notif => {
+            if (!root.isRepetitiveSystemNotification(notif)) return true;
+            const signature = `${notif.appName}|${notif.summary}|${notif.body}`;
+            if (seenRepetitive.has(signature)) return false;
+            seenRepetitive.add(signature);
+            return true;
+        });
+        return deduplicated.slice(0, root.maxHistoryEntries).sort((a, b) => a.time - b.time);
+    }
+
+    function shouldPopup(notif) {
+        return !root.isChromeNotification(notif);
     }
     
     onListChanged: {
@@ -166,10 +202,10 @@ Singleton {
                 "notification": notification,
                 "time": Date.now(),
             });
-			root.list = [...root.list, newNotifObject];
+            root.list = root.retainHistory([...root.list, newNotifObject]);
 
             // Popup
-            if (!root.popupInhibited) {
+            if (!root.popupInhibited && root.shouldPopup(newNotifObject)) {
                 newNotifObject.popup = true;
                 if (notification.expireTimeout != 0) {
                     newNotifObject.timer = notifTimerComponent.createObject(root, {
@@ -269,7 +305,19 @@ Singleton {
         path: Qt.resolvedUrl(filePath)
         onLoaded: {
             const fileContents = notifFileView.text()
-            root.list = JSON.parse(fileContents).map((notif) => {
+            const savedNotifications = JSON.parse(fileContents).map((notif) => {
+                return {
+                    "notificationId": notif.notificationId,
+                    "appIcon": notif.appIcon,
+                    "appName": notif.appName,
+                    "body": notif.body,
+                    "image": notif.image,
+                    "summary": notif.summary,
+                    "time": notif.time,
+                    "urgency": notif.urgency,
+                };
+            });
+            root.list = root.retainHistory(savedNotifications).map((notif) => {
                 return notifComponent.createObject(root, {
                     "notificationId": notif.notificationId,
                     "actions": [], // Notification actions are meaningless if they're not tracked by the server or the sender is dead
@@ -282,6 +330,7 @@ Singleton {
                     "urgency": notif.urgency,
                 });
             });
+            notifFileView.setText(stringifyList(root.list));
             // Find largest notificationId
             let maxId = 0
             root.list.forEach((notif) => {

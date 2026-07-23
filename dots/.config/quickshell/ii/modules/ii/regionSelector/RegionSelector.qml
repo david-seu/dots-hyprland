@@ -63,7 +63,7 @@ Scope {
     }
 
     function record() {
-        root.action = RegionSelection.SnipAction.Record
+        root.action = RegionSelection.SnipAction.RecordWithSound
         root.selectionMode = RegionSelection.SelectionMode.RectCorners
         GlobalStates.regionSelectorOpen = true
     }
