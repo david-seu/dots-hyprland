@@ -52,6 +52,19 @@ Item {
             }
         }
 
+        CircleUtilButton {
+            Layout.alignment: Qt.AlignVCenter
+            toggled: GlobalStates.pixelSproutOpen
+            downAction: () => GlobalStates.pixelSproutOpen = !GlobalStates.pixelSproutOpen
+            MaterialSymbol {
+                horizontalAlignment: Qt.AlignHCenter
+                fill: 1
+                text: "eco"
+                iconSize: Appearance.font.pixelSize.large
+                color: Appearance.colors.colOnLayer2
+            }
+        }
+
         Loader {
             active: Config.options.bar.utilButtons.showColorPicker
             visible: Config.options.bar.utilButtons.showColorPicker

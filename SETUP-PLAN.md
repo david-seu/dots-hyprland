@@ -155,7 +155,8 @@ Sources:
 - Direct bindings are staged for Kitty, Dolphin, Chrome, VS Code, btop, Pixel Sprout, and a double-invocation settings toggle.
 - Pixel Sprout is embedded in the main `ii` Quickshell process because its
   widget imports `qs.modules.common`; `Super+BracketLeft` calls the matching
-  `qs -c ii` IPC target.
+  `qs -c ii` IPC target, and the top bar keeps a compact `eco` toggle for the
+  same shared state.
 - The live profile still uses Hyprland `.conf` files for stability. The
   upstream Lua migration is documented in `UPSTREAM-DESIGN-REVIEW.md`; a
   separate, tested port is preferred over an in-place upstream merge.
